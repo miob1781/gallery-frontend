@@ -1,9 +1,23 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, createContext, useEffect, useState } from "react";
+import { getImages, postImage } from "../requests/requests.ts";
+import { Image } from "../types/types.ts";
+
+interface Props {
+  setCloudinaryId: Dispatch<SetStateAction<string>>;
+  setImages: Dispatch<SetStateAction<Image[]>>;
+}
+
+const CLOUD_NAME: string = process.env.REACT_APP_CLOUD_NAME!;
+const UPLOAD_PRESET: string = process.env.REACT_APP_UPLOAD_PRESET!;
+const uwConfig = {
+  cloudName: CLOUD_NAME,
+  uploadPreset: UPLOAD_PRESET
+};
 
 // Create a context to manage the script loading state
 const CloudinaryScriptContext = createContext({});
 
-function CloudinaryUploadWidget({ uwConfig, setPublicId }) {
+function CloudinaryUploadWidget({ setCloudinaryId, setImages }: Props) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -29,10 +43,20 @@ function CloudinaryUploadWidget({ uwConfig, setPublicId }) {
     if (loaded) {
       var myWidget = window.cloudinary.createUploadWidget(
         uwConfig,
-        (error, result) => {
+        async (error, result) => {
           if (!error && result && result.event === "success") {
-            console.log("Done! Here is the image info: ", result.info);
-            setPublicId(result.info.public_id);
+            console.log(result);
+            const cloudinaryId: string = result.info.public_id;
+            const error = await postImage(cloudinaryId);
+            if (!error) {
+              setCloudinaryId(cloudinaryId);
+              setImages(prev => [...prev, {
+                id: '',
+                cloudinaryId,
+                title: '',
+                tags: []
+              }]);
+            }
           }
         }
       );
