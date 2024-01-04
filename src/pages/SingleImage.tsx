@@ -4,6 +4,7 @@ import { Cloudinary, CloudinaryImage } from '@cloudinary/url-gen';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { Image } from '../types/types';
 import { addOrEditTitle, addTag, removeTag } from '../requests/requests.ts';
+import { getDatalist } from '../utils/get-datalist.tsx';
 
 interface Props {
     cloudinaryId: string;
@@ -51,11 +52,12 @@ export default function SingleImage({cloudinaryId, setCloudinaryId, images, cld}
     const handleTagSubmission: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
         if (!newTag) return;
+        const tagToLowerCase: string = newTag.toLowerCase();        
         setTags(prev => {
-            if (prev.includes(newTag)) return prev;
-            return [...prev, newTag];
+            if (prev.includes(tagToLowerCase)) return prev;
+            return [...prev, tagToLowerCase];
         });
-        await addTag(cloudinaryId, newTag);
+        await addTag(cloudinaryId, tagToLowerCase);
         setAddingTag(false);
     }
 
@@ -86,7 +88,13 @@ export default function SingleImage({cloudinaryId, setCloudinaryId, images, cld}
         </div>
         {addingTag && <form onSubmit={handleTagSubmission}>
             <label htmlFor='tag-input'>New Tag:</label>
-            <input id='tag-input' type='text' onChange={handleTagInputChange} />
+            <input
+                id='tag-input'
+                type='text'
+                list='add-tag-datalist'
+                onChange={handleTagInputChange}
+            />
+            {getDatalist(images, newTag.toLowerCase(), 'add-tag-datalist')}
             <button type='submit'>Add</button>
         </form>}
     </>)

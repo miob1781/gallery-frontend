@@ -7,6 +7,7 @@ import { getImages } from "../requests/requests.ts";
 import { AdvancedImage } from "@cloudinary/react";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { Image } from "../types/types.ts";
+import { getDatalist } from "../utils/get-datalist.tsx";
 
 interface Props {
     images: Image[];
@@ -19,7 +20,7 @@ export default function Gallery({images, setImages, setCloudinaryId, cld}: Props
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [searchTermInput, setSearchTermInput] = useState<string>('');
 
-    const filteredImages = !searchTerm ? images : images.filter(imgData => imgData.tags.includes(searchTerm));
+    const filteredImages: Image[] = !searchTerm ? images : images.filter(imgData => imgData.tags.includes(searchTerm));
 
     const handleFilterInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
         const searchInput = e.target.value;
@@ -62,7 +63,7 @@ export default function Gallery({images, setImages, setCloudinaryId, cld}: Props
 
     const handleFilterSubmission: FormEventHandler<HTMLFormElement> = (e) => {
         e.preventDefault();
-        setSearchTerm(searchTermInput);
+        setSearchTerm(searchTermInput.toLowerCase());
         setSearchTermInput('');
     }
 
@@ -82,7 +83,14 @@ export default function Gallery({images, setImages, setCloudinaryId, cld}: Props
         <CloudinaryUploadWidget setCloudinaryId={setCloudinaryId} setImages={setImages} />
         <form onSubmit={handleFilterSubmission}>
             <label htmlFor='filter-input'>Filter by tag:</label>
-            <input id='filter-input' type='text' value={searchTermInput} onChange={handleFilterInputChange} />
+            <input
+                id='filter-input'
+                type='text'
+                list='datalist-filter'
+                value={searchTermInput}
+                onChange={handleFilterInputChange}
+            />
+            {getDatalist(images, searchTermInput, 'datalist-filter')}
             <button type='submit'>Search</button>
         </form>
         {searchTerm && <button type='button' onClick={handleRemoveFilter}>Remove filter</button>}
