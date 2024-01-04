@@ -2,12 +2,14 @@ import React, { ChangeEventHandler, Dispatch, FormEventHandler, SetStateAction, 
 import {Cloudinary, CloudinaryImage} from "@cloudinary/url-gen";
 import {URLConfig} from "@cloudinary/url-gen";
 import {CloudConfig} from "@cloudinary/url-gen";
-import CloudinaryUploadWidget from '../components/CloudinaryUploadWidget.tsx';
+import CloudinaryUploadWidget from '../components/widgets/CloudinaryUploadWidget.tsx';
 import { getImages } from "../requests/requests.ts";
 import { AdvancedImage } from "@cloudinary/react";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { Image } from "../types/types.ts";
 import { getDatalist } from "../utils/get-datalist.tsx";
+import { Button } from "../components/styles/Button.tsx";
+import { getTagsString} from "../utils/get-tags-string.ts";
 
 interface Props {
     images: Image[];
@@ -27,17 +29,6 @@ export default function Gallery({images, setImages, setCloudinaryId, cld}: Props
         setSearchTermInput(searchInput);
     }
 
-    const getTagsString = (tags: string[]): string => {
-        const tagsString: string = tags.reduce((resultString, tag, index) => {
-            if (index === tags.length - 1) {
-                return resultString + tag;
-            } else {
-                return resultString + tag + `, `;
-            }
-        }, '');
-        return tagsString;
-    }
-
     const displayGallery = () => {
         if (filteredImages.length === 0) {
             return <p>There are no images with the tag: {searchTerm}.</p>
@@ -54,7 +45,7 @@ export default function Gallery({images, setImages, setCloudinaryId, cld}: Props
                 <AdvancedImage
                     cldImg={image}
                     onClick={() => setCloudinaryId(imageData.cloudinaryId)}
-                />;
+                />
                 <p>{imageData.title}</p>
             </div>
         });
@@ -91,9 +82,9 @@ export default function Gallery({images, setImages, setCloudinaryId, cld}: Props
                 onChange={handleFilterInputChange}
             />
             {getDatalist(images, searchTermInput, 'datalist-filter')}
-            <button type='submit'>Search</button>
+            <Button type='submit'>Search</Button>
         </form>
-        {searchTerm && <button type='button' onClick={handleRemoveFilter}>Remove filter</button>}
+        {searchTerm && <Button type='button' onClick={handleRemoveFilter}>Remove filter</Button>}
         {searchTerm && filteredImages.length > 0 && <p>Images with tag: {searchTerm}</p>}
         {displayGallery()}
     </>);

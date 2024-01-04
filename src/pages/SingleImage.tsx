@@ -3,8 +3,12 @@ import { AdvancedImage } from '@cloudinary/react';
 import { Cloudinary, CloudinaryImage } from '@cloudinary/url-gen';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { Image } from '../types/types';
-import { addOrEditTitle, addTag, removeTag } from '../requests/requests.ts';
+import { addOrEditTitle, addTag } from '../requests/requests.ts';
 import { getDatalist } from '../utils/get-datalist.tsx';
+import { Button } from '../components/styles/Button.tsx';
+import Tag from '../components/ui/Tag.tsx';
+import styled from 'styled-components';
+import { Title } from '../components/styles/Title.tsx';
 
 interface Props {
     cloudinaryId: string;
@@ -37,10 +41,12 @@ export default function SingleImage({cloudinaryId, setCloudinaryId, images, cld}
 
     const displayTags = () => {
         return tags.map(tag => {
-            return <div key={tag}>
-                <p>{tag}</p>
-                <button type='button' onClick={() => handleRemoveTag(tag)}>Remove Tag</button>
-            </div>
+            return <Tag
+                key={tag}
+                tag={tag}
+                setTags={setTags}
+                cloudinaryId={cloudinaryId}
+            >{tag}</Tag>
         });
     }
 
@@ -61,31 +67,26 @@ export default function SingleImage({cloudinaryId, setCloudinaryId, images, cld}
         setAddingTag(false);
     }
 
-    const handleRemoveTag = async (tagToRemove: string) => {
-        setTags(prev => prev.filter(tag => tag !== tagToRemove));
-        await removeTag(cloudinaryId, tagToRemove);
-    }
-
     return (<>
         <h2>Single Image</h2>
         <div>
-            <button type='button' onClick={() => setCloudinaryId('')}>Back</button>
+            <Button type='button' onClick={() => setCloudinaryId('')}>Back</Button>
         </div>
         <AdvancedImage cldImg={image} />
         {title && !changingTitle
             ? <div>
-                <p>{title}</p>
-                <button type='button' onClick={(() => setChangingTitle(true))}>Change Title</button>
+                <Title>{title}</Title>
+                <Button type='button' onClick={(() => setChangingTitle(true))}>Edit Title</Button>
             </div>
             : <form onSubmit={handleTitleSubmission}>
                 <label htmlFor='title-input'>New Title:</label>
                 <input id='title-input' type='text' defaultValue={title} maxLength={30} onChange={handleTitleChange} />
-                <button type='submit'>Submit</button>
+                <Button type='submit'>Submit</Button>
             </form>}
-        <div>
+        <TagsContainer>
             {displayTags()}
-            <button type='button' onClick={() => setAddingTag(true)}>Add Tag</button>
-        </div>
+            <Button type='button' onClick={() => setAddingTag(true)}>Add Tag</Button>
+        </TagsContainer>
         {addingTag && <form onSubmit={handleTagSubmission}>
             <label htmlFor='tag-input'>New Tag:</label>
             <input
@@ -95,7 +96,15 @@ export default function SingleImage({cloudinaryId, setCloudinaryId, images, cld}
                 onChange={handleTagInputChange}
             />
             {getDatalist(images, newTag.toLowerCase(), 'add-tag-datalist')}
-            <button type='submit'>Add</button>
+            <Button type='submit'>Add</Button>
         </form>}
     </>)
 }
+
+const TagsContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    width: clamp(400px, 50vw, 600px);
+    justify-content: center;
+    margin: 15px auto;
+`;
