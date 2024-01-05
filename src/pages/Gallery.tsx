@@ -1,15 +1,13 @@
 import React, { ChangeEventHandler, Dispatch, FormEventHandler, SetStateAction, useEffect, useState } from "react";
-import {Cloudinary, CloudinaryImage} from "@cloudinary/url-gen";
-import {URLConfig} from "@cloudinary/url-gen";
-import {CloudConfig} from "@cloudinary/url-gen";
+import { Cloudinary } from "@cloudinary/url-gen";
 import CloudinaryUploadWidget from '../components/widgets/CloudinaryUploadWidget.tsx';
 import { getImages } from "../requests/requests.ts";
-import { AdvancedImage } from "@cloudinary/react";
-import { fill } from "@cloudinary/url-gen/actions/resize";
 import { Image } from "../types/types.ts";
 import { getDatalist } from "../utils/get-datalist.tsx";
 import { Button } from "../components/styles/Button.tsx";
-import { getTagsString} from "../utils/get-tags-string.ts";
+import { Input } from "../components/styles/Input.tsx";
+import GalleryImage from "../components/ui/GalleryImage.tsx";
+import styled from "styled-components";
 
 interface Props {
     images: Image[];
@@ -34,20 +32,8 @@ export default function Gallery({images, setImages, setCloudinaryId, cld}: Props
             return <p>There are no images with the tag: {searchTerm}.</p>
         }
 
-        const gallery = filteredImages.map(imageData => {
-            const image: CloudinaryImage = cld.image(imageData.cloudinaryId);
-            image.resize(fill().width(180).height(180));
-            
-            return <div
-                key={imageData.cloudinaryId}
-                title={`Tags: ${getTagsString(imageData.tags)}`}
-            >
-                <AdvancedImage
-                    cldImg={image}
-                    onClick={() => setCloudinaryId(imageData.cloudinaryId)}
-                />
-                <p>{imageData.title}</p>
-            </div>
+        const gallery = filteredImages.map(imageData => {            
+            return <GalleryImage imageData={imageData} cld={cld} setCloudinaryId={setCloudinaryId} />
         });
         return gallery;
     }
@@ -72,20 +58,34 @@ export default function Gallery({images, setImages, setCloudinaryId, cld}: Props
 
     return (<>
         <CloudinaryUploadWidget setCloudinaryId={setCloudinaryId} setImages={setImages} />
-        <form onSubmit={handleFilterSubmission}>
-            <label htmlFor='filter-input'>Filter by tag:</label>
-            <input
-                id='filter-input'
-                type='text'
-                list='datalist-filter'
-                value={searchTermInput}
-                onChange={handleFilterInputChange}
-            />
-            {getDatalist(images, searchTermInput, 'datalist-filter')}
-            <Button type='submit'>Search</Button>
-        </form>
-        {searchTerm && <Button type='button' onClick={handleRemoveFilter}>Remove filter</Button>}
-        {searchTerm && filteredImages.length > 0 && <p>Images with tag: {searchTerm}</p>}
-        {displayGallery()}
+        <FilterFormContainer>
+            <form onSubmit={handleFilterSubmission}>
+                <label htmlFor='filter-input'>Filter by tag:</label>
+                <Input
+                    id='filter-input'
+                    type='text'
+                    list='datalist-filter'
+                    value={searchTermInput}
+                    onChange={handleFilterInputChange}
+                />
+                {getDatalist(images, searchTermInput, 'datalist-filter')}
+                <Button type='submit'>Search</Button>
+            </form>
+            <div style={{marginTop: '10px'}}>
+                {searchTerm && <Button type='button' onClick={handleRemoveFilter}>Remove filter</Button>}
+            </div>
+            {searchTerm && filteredImages.length > 0 && <p style={{marginTop: '10px'}}>Images with tag: {searchTerm}</p>}
+        </FilterFormContainer>
+        <GalleryContainer>{displayGallery()}</GalleryContainer>
     </>);
 }
+
+const FilterFormContainer = styled.div`
+    margin: 20px;
+`;
+
+const GalleryContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+`;

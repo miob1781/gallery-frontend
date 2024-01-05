@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import './App.css';
 import { Cloudinary } from "@cloudinary/url-gen";
-import {AdvancedImage} from '@cloudinary/react';
 import SingleImage from './pages/SingleImage.tsx';
 import Gallery from './pages/Gallery.tsx';
 import { Image } from './types/types.ts';
+import styled from 'styled-components';
 
 function App() {
   const [images, setImages] = useState<Image[]>([]);
@@ -18,7 +18,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Photo Gallery</h1>
+      <H1>Photo Gallery</H1>
       {!cloudinaryId && <Gallery
         images={images}
         setImages={setImages}
@@ -36,3 +36,7 @@ function App() {
 }
 
 export default App;
+
+const H1 = styled.h1`
+  margin-bottom: 20px;
+`;
