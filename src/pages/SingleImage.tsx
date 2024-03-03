@@ -24,6 +24,7 @@ export default function SingleImage({cloudinaryId, setCloudinaryId, images, cld}
     image.resize(fill().width(400).height(400));
     
     const [title, setTitle] = useState<string>(imageData.title);
+    const [titleInput, setTitleInput] = useState<string>(imageData.title);
     const [changingTitle, setChangingTitle] = useState<boolean>(false);
     const [tags, setTags] = useState<string[]>(imageData.tags);
     const [addingTag, setAddingTag] = useState<boolean>(false);
@@ -32,12 +33,13 @@ export default function SingleImage({cloudinaryId, setCloudinaryId, images, cld}
 
     const handleTitleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
         const newTitle: string = e.target.value;
-        setTitle(newTitle);
+        setTitleInput(newTitle);
     }
     
     const handleTitleSubmission: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
-        await addOrEditTitle(cloudinaryId, title);
+        await addOrEditTitle(cloudinaryId, titleInput);
+        setTitle(titleInput);
         setChangingTitle(false);
     }
 
@@ -76,7 +78,7 @@ export default function SingleImage({cloudinaryId, setCloudinaryId, images, cld}
 
     return (<>
         <div>
-            <Button type='button' onClick={() => setCloudinaryId('')}>Back</Button>
+            <Button type='button' onClick={() => setCloudinaryId('')}>Back to Gallery</Button>
         </div>
         <ImageContainer>
             <AdvancedImage cldImg={image} />
@@ -88,7 +90,7 @@ export default function SingleImage({cloudinaryId, setCloudinaryId, images, cld}
             </div>
             : <form onSubmit={handleTitleSubmission}>
                 <label htmlFor='title-input'>New Title:</label>
-                <Input id='title-input' type='text' defaultValue={title} maxLength={30} onChange={handleTitleChange} />
+                <Input id='title-input' type='text' defaultValue={titleInput} maxLength={30} onChange={handleTitleChange} />
                 <Button type='submit'>Submit</Button>
             </form>}
         <TagsContainer>

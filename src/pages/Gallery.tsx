@@ -28,7 +28,10 @@ export default function Gallery({images, setImages, setCloudinaryId, cld}: Props
     }
 
     const displayGallery = () => {
-        if (filteredImages.length === 0) {
+        if (images.length === 0) {
+            return <p>The gallery is empty.</p>
+        }
+        else if (filteredImages.length === 0) {
             return <p>There are no images with the tag: {searchTerm}.</p>
         }
 
