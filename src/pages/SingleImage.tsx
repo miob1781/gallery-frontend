@@ -81,7 +81,7 @@ export default function SingleImage({cloudinaryId, setCloudinaryId, images, cld}
             <Button type='button' onClick={() => setCloudinaryId('')}>Back to Gallery</Button>
         </div>
         <ImageContainer>
-            <AdvancedImage cldImg={image} />
+            <AdvancedImage cldImg={image} style={{width: '100%'}} />
         </ImageContainer>
         {title && !changingTitle
             ? <div>
@@ -122,13 +122,14 @@ export default function SingleImage({cloudinaryId, setCloudinaryId, images, cld}
 }
 
 const ImageContainer = styled.div`
-    margin: 15px;
+    margin: 15px auto;
+    max-width: min(500px, 90vw);
 `;
 
 const TagsContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
-    width: clamp(400px, 50vw, 600px);
+    width: clamp(min(400px, 95vw), 50vw, 600px);
     justify-content: center;
     margin: 15px auto;
 `;
