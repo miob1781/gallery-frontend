@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, createContext, useEffect, useState } from "react";
-import { getImages, postImage } from "../../requests/requests.ts";
+import { postImage } from "../../requests/requests.ts";
 import { Image } from "../../types/types.ts";
 
 interface Props {

@@ -9,4 +9,8 @@ export const Button = styled.button<{$danger?: boolean}>`
     border-radius: 5px;
     border: 2px solid black;
     cursor: pointer;
+
+    &:active {
+        background-color: ${props => props.$danger ? 'darkred' : '#0b6464'}
+    }
 `;
