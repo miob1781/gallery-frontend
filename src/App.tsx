@@ -39,4 +39,10 @@ export default App;
 
 const H1 = styled.h1`
   margin-bottom: 20px;
+  font-family: "Sriracha", cursive;
+  font-size: 3rem;
+
+  @media screen and (max-width: 420px) {
+   font-size: 2.4rem; 
+  }
 `;
